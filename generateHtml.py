@@ -13,38 +13,42 @@ resultsLine = results.readlines()
 lookup = "The END RESULT Start"
 missingLine = []
 
-##def genHtml(missing):
-##        userFilePath = os.path.expanduser('~')
-##        missingFile = open(userFilePath+"/MissingFiles.html", "w")
-####        Log.Debug("******* Starting Export of %s***********" %(missingFile))
-##        m = missing[:]
-##        try:
-##                missingFile.write("<!DOCTYPE html>\n<html>\n<body>\n<h1>Missing items</h1>")
-##                for item in m:
-##                        missingFile.write("<p>"+item+"</p>")
-##
-##                missingFile.write("\n</body>\n</html>")
-##        except:
-####                Log.Critical("There was an issue generating HTML")
-##                pass
-##
+def genHtml(missing):
+        userFilePath = os.path.expanduser('~')
+        missingFile = open(userFilePath+"/MissingFiles.html", "w")
+##        Log.Debug("******* Starting Export of %s***********" %(missingFile))
+        m = missing[:]
+        try:
+                missingFile.write("<!DOCTYPE html>\n<html>\n<body>\n<h1>Missing items</h1>")
+                for item in m:
+                        missingFile.write("<p>"+item+"</p>")
+
+                missingFile.write("\n</body>\n</html>")
+        except:
+##                Log.Critical("There was an issue generating HTML")
+                pass
+
 ##Find line number for 'missing' output ##
 foundLine = False
 
-for num, items in enumerate(resultsLine, 0):
-##        items = items.rstrip()
+
+for num, items in enumerate(resultsLine):
+        items = items.rstrip()
         if lookup in items:
-##                for i in range(1):
-                nextLine = num + 2
+                for i in range(1):
+                        nextLine = num + 2
 ##                        print resultsLine[nextLine]
-                missingItem = resultsLine[nextLine]
-                missingLine.append(missingItem)
-##                print items
+                        missingItem = resultsLine[nextLine]
+                        missingItem = missingItem[65:]
+                        missingLine.append(missingItem)
+##                        print items
 ##                print missingLine
+        
+print missingLine
 
-print str(missingLine[0])
+print len(missingLine)
 
-##genHtml(missingLine[2])
+genHtml(missingLine)
 
 ##with results as file:
 ##        for num, line in enumerate(file, 0):
