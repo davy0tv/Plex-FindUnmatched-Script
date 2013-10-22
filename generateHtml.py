@@ -1,70 +1,83 @@
 import os
 import unicodedata
 import sys
-import csv
+import re
+
 
 ## open log file after scan##
-#results = open("/var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Logs/PMS\ Plugin\ Logs/com$
+## Find OS type to find Plex Unmatched media log##
+os_set = sys.platform
+pathtoLog = ''
+
+##while True:
+##        manualCheck = str(raw_input("Did you want to manually load log file location? (y/n)"))
+##        if manualCheck == ('y'|'Y'):
+##                logPath = raw_input("Enter path to log without quotes:")
+##                break
+##        else:
+##if (os_set == 'linux2'):
+##        pathtoLog = '/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Logs/PMS Plugin Logs/com.plexapp.plugins.findUnmatch.log'
+####                        break
+##elif (os_set == 'win32'):
+##        Userwin32 = os.environ['USERPROFILE']
+##        pathtoLog = Userwin32+'\\AppData\\Local\\Plex Media Server\\Logs\\PMS Plugin Logs\\com.plexapp.plugins.findUnmatch.log'
+####                        break
+##elif (os_set == 'darwin'):
+##        pathtoLog = '~/Library/Application Support/Plex Media Server/Logs/PMS Plugin Logs/com.plexapp.plugins.findUnmatch.log'
+####                        break
+##else:
+##        print "Error setting path to database on your operating system!!"
+####                        break
+
+
+####EDIT ME##
+## Example below
+results = open("C:\Users\david.bell\Documents\GitHub\Plex-FindUnmatched-Script\com.plexapp.plugins.findUnmatch.txt")
+##results = open('/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Logs/PMS Plugin Logs/com.plexapp.plugins.findUnmatch.log')
+
+
+##logPath = os.path.expanduser(pathtoLog)
+##results = open(logPath)
+
 
 ##test dir
-results = open("C:\Users\david.bell\Documents\GitHub\Plex-FindUnmatched-Script\com.plexapp.plugins.findUnmatch.txt")
+##results = open("C:\Users\USER\Documents\GitHub\Plex-FindUnmatched-Script\com.plexapp.plugins.findUnmatch.txt")
+
 resultsLine = results.readlines()
+
 
 lookup = "The END RESULT Start"
 missingLine = []
+missingFound = []
 
 def genHtml(missing):
         userFilePath = os.path.expanduser('~')
-        missingFile = open(userFilePath+"/MissingFiles.html", "w")
-##        Log.Debug("******* Starting Export of %s***********" %(missingFile))
+        missingFile = open(userFilePath+"MissingFiles.html", "w")
         m = missing[:]
         try:
                 missingFile.write("<!DOCTYPE html>\n<html>\n<body>\n<h1>Missing items</h1>")
                 for item in m:
-                        missingFile.write("<p>"+item+"</p>")
+                        missingFile.write("<p>"+item.decode('utf-8')+"</p>")
+
 
                 missingFile.write("\n</body>\n</html>")
         except:
-##                Log.Critical("There was an issue generating HTML")
                 pass
 
-##Find line number for 'missing' output ##
+
+##Find next list line'missing' output ##
 foundLine = False
 
-
+##Iterate file for lines##
 for num, items in enumerate(resultsLine):
         items = items.rstrip()
         if lookup in items:
+##Found line now grab the line 2 down (has the list)##
+##Still need to confirm the front half is always 65##               
                 for i in range(1):
                         nextLine = num + 2
-##                        print resultsLine[nextLine]
                         missingItem = resultsLine[nextLine]
                         missingItem = missingItem[65:]
-                        missingLine.append(missingItem)
-##                        print items
-##                print missingLine
+                        missingLine = re.split('\', \'|\", \"|\', \"|\", \'', missingItem)
         
-print missingLine
-
-print len(missingLine)
-
 genHtml(missingLine)
-
-##with results as file:
-##        for num, line in enumerate(file, 0):
-##                line = line.rstrip()
-##                if lookup in line:
-##                        foundLine = True
-##                        if foundLine:
-##                                a = 0
-##                                while a < 5:
-##                                        a = a + 1
-##                        missingLine.append(line)
-##                       ## print(line)
-##                        print(missingLine)
-
-## Thinking putting a str tag on the actual line may make it easier later
-## Shouldnt affect the plugin
-
-## Find line index (still would need to split the rest of the line and pass that into genHtml
-#startParse = string.rfind("MissingTag")
